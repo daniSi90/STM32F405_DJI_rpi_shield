@@ -113,7 +113,7 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_SPI3_Init();
-  //MX_UART4_Init();
+  MX_UART4_Init();
   MX_I2C1_Init();
   MX_SPI2_Init();
   MX_SPI1_Init();
