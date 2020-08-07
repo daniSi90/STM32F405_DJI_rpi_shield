@@ -13,7 +13,7 @@
 #include "gnss.hpp"
 
 uint8_t rxString[MAX_GNSS];
-int rxindex = 0;
+//int rxindex = 0;
 uint8_t *rxBufferGNSSp;  // DODANO
 uint8_t rxx;
 tGNSSrx GNSSrx;

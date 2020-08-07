@@ -1,5 +1,5 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+Core/Libs/ubx_gnss.o: ../Core/Libs/ubx_gnss.c ../Core/Libs/ubx_gnss.h \
+ ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -37,11 +37,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_pwr.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_gpio.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h \
- ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/spi.h \
- ../Core/Inc/usart.h ../Core/Inc/gpio.h ../Core/Libs/bno080.h \
- ../Core/Libs/quaternion.h ../Core/Libs/ubx_gnss.h \
- ../Core/Libs/TR_One_HAL.h
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h
+
+../Core/Libs/ubx_gnss.h:
 
 ../Core/Inc/main.h:
 
@@ -122,23 +120,3 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_dma.h:
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_ll_exti.h:
-
-../Core/Inc/dma.h:
-
-../Core/Inc/main.h:
-
-../Core/Inc/i2c.h:
-
-../Core/Inc/spi.h:
-
-../Core/Inc/usart.h:
-
-../Core/Inc/gpio.h:
-
-../Core/Libs/bno080.h:
-
-../Core/Libs/quaternion.h:
-
-../Core/Libs/ubx_gnss.h:
-
-../Core/Libs/TR_One_HAL.h:

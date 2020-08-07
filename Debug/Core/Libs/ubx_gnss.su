@@ -1,0 +1,10 @@
+ubx_gnss.c:17:6:ubx_handleGNSS	280	static
+ubx_gnss.c:32:6:EventsCommGNSS	24	static
+ubx_gnss.c:37:6:initGNSSrx	16	static
+ubx_gnss.c:43:5:readUBXpkt	24	static
+ubx_gnss.c:73:9:parseUBX	40	static
+ubx_gnss.c:111:5:addUBXpktByte	24	static
+ubx_gnss.c:170:5:checkUBX	24	static
+ubx_gnss.c:179:6:crcUBX	32	static
+ubx_gnss.c:191:9:bytesToLong	24	static
+ubx_gnss.c:202:9:bytesToShort	24	static

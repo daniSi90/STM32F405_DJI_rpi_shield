@@ -31,18 +31,13 @@
 //#include "Quaternion.h"
 #include "string.h"
 
-#include "gnss_wrapper.h"
-#include "basic_types.h"
+#include "ubx_gnss.h"
 
 #include "TR_One_HAL.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-CGNSS_c *test;
-uint8_t *rxBufferGNSS;
-uint8_t aa;
-CSensors* sensorRTK;
 
 // TerraBee One Sensor
 TRONE_Str sens[2];
@@ -64,6 +59,7 @@ TERAONE_Result res = 0;
 typedef struct stm_rpi{
 	int16_t tof_sens[4];
 	int16_t rtk_sens;
+	CGNSS gnss_sensor;
 }stm_rpi;
 
 stm_rpi spi_data = {.tof_sens[0] = 500, .tof_sens[1] = 600, .tof_sens[2] = 700, .tof_sens[3] = 800, .rtk_sens = 100};
@@ -133,10 +129,10 @@ int main(void)
   HAL_Delay(20);
   bno080_start_IT();
    */
+
   // RTK
-  sensorRTK = newCSensors();
   //sensorRTK = copy_struct(); // Tukaj se nahajajo vsi podatki
-  HAL_UART_Receive_DMA(&huart2, &rxx, 1);
+  HAL_UART_Receive_DMA(&huart2, &spi_data.gnss_sensor.rx_byte, 1);
 
   /* TerraBeeOne */
   //sens[0].i2cHandle = &hi2c1;
@@ -228,7 +224,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart == &huart2)		//GNSS
 	{
-		handleGNSS_c();
+		ubx_handleGNSS(&spi_data.gnss_sensor);
 	}
 }
 

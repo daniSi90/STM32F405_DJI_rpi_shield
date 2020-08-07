@@ -3,6 +3,7 @@
 "Core/Libs/bno080.o"
 "Core/Libs/gnss.o"
 "Core/Libs/gnss_wrapper.o"
+"Core/Libs/ubx_gnss.o"
 "Core/Src/dma.o"
 "Core/Src/gpio.o"
 "Core/Src/i2c.o"
