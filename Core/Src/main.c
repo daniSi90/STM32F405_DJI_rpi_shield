@@ -42,6 +42,7 @@
 // TerraBee One Sensor
 TRONE_Str sens[2];
 TERAONE_Result res = 0;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -58,12 +59,14 @@ TERAONE_Result res = 0;
 /* USER CODE BEGIN PV */
 typedef struct stm_rpi{
 	int16_t tof_sens[4];
-	int16_t rtk_sens;
+	int16_t bno_sens;
 	CGNSS gnss_sensor;
 }stm_rpi;
 
-stm_rpi spi_data = {.tof_sens[0] = 500, .tof_sens[1] = 600, .tof_sens[2] = 700, .tof_sens[3] = 800, .rtk_sens = 100};
+stm_rpi spi_data;
+//stm_rpi spi_data = {.tof_sens[0] = 500, .tof_sens[1] = 600, .tof_sens[2] = 700, .tof_sens[3] = 800, .rtk_sens = 100};
 
+uint8_t pin_state = 0; //for testing only, delete after
 
 /* USER CODE END PV */
 
@@ -113,7 +116,6 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_SPI3_Init();
-  MX_UART4_Init();
   MX_I2C1_Init();
   MX_SPI2_Init();
   MX_SPI1_Init();
@@ -123,12 +125,10 @@ int main(void)
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
-  /*
   bno080_Initialization();  // READ sensor in external interrupt  - void EXTI9_5_IRQHandler(void)
   bno080_enableRotationVector(19000); //enable rotation vector at 200Hz
   HAL_Delay(20);
   bno080_start_IT();
-   */
 
   // RTK
   //sensorRTK = copy_struct(); // Tukaj se nahajajo vsi podatki
@@ -146,15 +146,18 @@ int main(void)
   while (1)
   {
 	 //TrOne_ReadDist(&sens[0]);
-	  /*
+
 	 HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&spi_data, sizeof(spi_data));
 	 HAL_GPIO_WritePin (RPI_INT_GPIO_Port, RPI_INT_Pin, 1);
-	 HAL_Delay(1000);
+	 HAL_Delay(50);
 
 	 HAL_GPIO_WritePin (RPI_INT_GPIO_Port, RPI_INT_Pin, 0);
-	 HAL_Delay(1000);
+	 HAL_Delay(50);
 
-	 */
+	 pin_state = HAL_GPIO_ReadPin (RPI_INT_GPIO_Port, RPI_INT_Pin);
+
+	 spi_data.bno_sens += 3;
+	 if (spi_data.bno_sens > 50) {spi_data.bno_sens = -50;}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

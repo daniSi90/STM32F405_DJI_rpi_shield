@@ -1,8 +1,6 @@
 "Core/Libs/Quaternion.o"
 "Core/Libs/TR_One_HAL.o"
 "Core/Libs/bno080.o"
-"Core/Libs/gnss.o"
-"Core/Libs/gnss_wrapper.o"
 "Core/Libs/ubx_gnss.o"
 "Core/Src/dma.o"
 "Core/Src/gpio.o"
