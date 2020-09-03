@@ -15,7 +15,7 @@
 #include "main.h"
 #include "spi.h"
 
-#include "quaternion.h"
+#include "Quaternion.h"
 
 /* Link With Hardware */
 //#define BNO_SPI_CHANNEL SPI2

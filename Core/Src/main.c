@@ -22,6 +22,7 @@
 #include "dma.h"
 #include "i2c.h"
 #include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -34,6 +35,7 @@
 #include "ubx_gnss.h"
 
 #include "TR_One_HAL.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,12 +63,21 @@ typedef struct stm_rpi{
 	int16_t tof_sens[4];
 	int16_t bno_sens;
 	CGNSS gnss_sensor;
+	uint8_t pwm_val;
 }stm_rpi;
 
 stm_rpi spi_data;
 //stm_rpi spi_data = {.tof_sens[0] = 500, .tof_sens[1] = 600, .tof_sens[2] = 700, .tof_sens[3] = 800, .rtk_sens = 100};
 
 uint8_t pin_state = 0; //for testing only, delete after
+
+
+__IO uint32_t uwDutyCycle1 = 0;
+__IO uint16_t uwDutyCycle2 = 0;
+__IO uint32_t uwDutyCyclePre1 = 0;
+__IO uint16_t uwDutyCyclePre2 = 0;
+__IO uint32_t uwDutyCycleCur1 = 0;
+__IO uint16_t uwDutyCycleCur2 = 0;
 
 /* USER CODE END PV */
 
@@ -120,15 +131,19 @@ int main(void)
   MX_SPI2_Init();
   MX_SPI1_Init();
   MX_USART2_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
 
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
+  /* ODKOMENTIRAJ
   bno080_Initialization();  // READ sensor in external interrupt  - void EXTI9_5_IRQHandler(void)
   bno080_enableRotationVector(19000); //enable rotation vector at 200Hz
   HAL_Delay(20);
   bno080_start_IT();
+  ODKOMENTIRAJ */
 
   // RTK
   //sensorRTK = copy_struct(); // Tukaj se nahajajo vsi podatki
@@ -138,6 +153,17 @@ int main(void)
   //sens[0].i2cHandle = &hi2c1;
   //sens[0].Address = 0x40 << 1;  // default 0x30 << 1;
   //res = TrOne_WhoAmI(&sens[0]);
+
+  // Capture PWM Duty Cycle
+  if(HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1) != HAL_OK)
+  {
+	  Error_Handler();
+  }
+
+  if(HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_4) != HAL_OK)
+  {
+	  Error_Handler();
+  }
 
   /* USER CODE END 2 */
 
@@ -158,6 +184,7 @@ int main(void)
 
 	 spi_data.bno_sens += 3;
 	 if (spi_data.bno_sens > 50) {spi_data.bno_sens = -50;}
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -229,6 +256,40 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	{
 		ubx_handleGNSS(&spi_data.gnss_sensor);
 	}
+}
+
+
+/**
+  * @brief  Input Capture callback in non blocking mode
+  * @param  htim: TIM IC handle
+  * @retval None
+  */
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+
+  if (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)
+  {
+	  uwDutyCycleCur1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+	  uwDutyCycle1 = uwDutyCycleCur1 - uwDutyCyclePre1;
+	  uwDutyCyclePre1 = uwDutyCycleCur1;
+
+	  // 16800 - Number of counts for 1ms (OFF), 33600 Number of counts for 2ms (ON)
+	  if(uwDutyCycle1 == 33600){
+		  spi_data.pwm_val |= 0x02;
+	  }else if(uwDutyCycle1 == 16800){
+		  spi_data.pwm_val &= 0xFD;
+	  }
+  }else if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_4){
+	  uwDutyCycleCur2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_4);
+	  uwDutyCycle2 = uwDutyCycleCur2 - uwDutyCyclePre2;
+	  uwDutyCyclePre2 = uwDutyCycleCur2;
+	  if(uwDutyCycle2 == 33600){
+		  spi_data.pwm_val |= 0x01;
+	  }else if(uwDutyCycle2 == 16800){
+		  spi_data.pwm_val &= 0xFE;
+	  }
+  }
+
 }
 
 /* USER CODE END 4 */
