@@ -79,18 +79,21 @@ uint8_t parseUBX(CGNSS* handle, uint8_t *buf, int cnt)
 		if(buf[1]==UBX_NAV_PVT && cnt>=92)
 		{
 		  handle->iTOW = bytesToLong(&(buf[4]));
-		  handle->UTCyear = bytesToShort(&(buf[8]));
-		  handle->UTCmonth = (int)buf[10];
-		  handle->UTCday = (int)buf[11];
-		  handle->UTChour = (int)buf[12];
-		  handle->UTCminute = (int)buf[13];
-		  handle->UTCsecond = (int)buf[14];
-		  handle->fixType = (int)buf[24];
+		  handle->UTCyear = (uint16_t)bytesToShort(&(buf[8]));
+		  handle->UTCmonth = (uint8_t)buf[10];
+		  handle->UTCday = (uint8_t)buf[11];
+		  handle->UTChour = (uint8_t)buf[12];
+		  handle->UTCminute = (uint8_t)buf[13];
+		  handle->UTCsecond = (uint8_t)buf[14];
+		  handle->fixType = (uint8_t)buf[24];
 		  handle->hAcc = bytesToLong(&(buf[44]));
 		  handle->vAcc = bytesToLong(&(buf[48]));
 		  handle->pos.lon = bytesToLong(&(buf[28]))*1.0e-7;
 		  handle->pos.lat = bytesToLong(&(buf[32]))*1.0e-7;
 		  handle->pos.alt = bytesToLong(&(buf[36]))*1.0e-7;
+		  handle->vel.N = bytesToLong(&(buf[52])); // mm/s
+		  handle->vel.E = bytesToLong(&(buf[56]));
+		  handle->vel.D = bytesToLong(&(buf[60]));
 		}
 		else if(buf[1]==UBX_NAV_RELPOSNED && cnt>=40)
 		{

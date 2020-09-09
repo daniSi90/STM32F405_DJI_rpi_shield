@@ -55,13 +55,23 @@
 
  enum{
 	// UBX CLASS ID
-	UBX_NAV     	 	   = 0x01,   //Navigation Results Messages
-	UBX_MON     	 	   = 0x0A,   //Monitoring Messages
+	UBX_NAV     	    = 0x01,   //Navigation Results Messages
+	UBX_MON     	 	= 0x0A,   //Monitoring Messages
 	// UBX MESSAGE ID
 	UBX_NAV_PVT         = 0x07,   //NAV-PVT: Navigation Position Velocity Time Solution
 	UBX_NAV_RELPOSNED   = 0x3C,   //NAV-RELPOSNED: Relative Positioning Information in NED frame
 	UBX_MON_MSGPP       = 0x06   //MON-MSGPP: Message Parse and Process Status
  };
+
+// Fix Types
+typedef enum {
+	RTK_NO_FIX  = 0x00U,
+	RTK_DRO		= 0x01U,
+	RTK_2D		= 0x02U,
+	RTK_3D		= 0x03U,
+	RTK_GNSS	= 0x04U,
+	RTK_TIM		= 0x05U
+}GNSS_FixTypeDef;
 
  typedef struct
  {
@@ -69,6 +79,13 @@
  	float lon;
  	float alt;
  } Pos;
+
+ typedef struct
+ {
+ 	float N;
+ 	float E;
+ 	float D;
+ } Vel;
 
  typedef struct{
  	float N;
@@ -79,17 +96,18 @@
  // GNSS Structure
  typedef struct CGNSS{
 	Pos pos;
+	Vel vel;
 	PosRel relPos;
-	int fixType;
+	GNSS_FixTypeDef fixType;
 	float hAcc;
 	float vAcc;
 	float iTOW;
-	int UTCyear;
-	int UTCmonth;
-	int UTCday;
-	int UTChour;
-	int UTCminute;
-	int UTCsecond;
+	uint16_t UTCyear;
+	uint8_t UTCmonth;
+	uint8_t UTCday;
+	uint8_t UTChour;
+	uint8_t UTCminute;
+	uint8_t UTCsecond;
 	uint8_t parseUBX;
 	int msgs;
 	uint8_t rx_byte;
