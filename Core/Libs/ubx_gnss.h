@@ -94,6 +94,7 @@ typedef enum {
  	float N;
  	float E;
  	float D;
+ 	float velocity;
  } Vel;
 
  typedef struct{

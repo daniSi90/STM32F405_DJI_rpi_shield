@@ -68,6 +68,7 @@ typedef struct stm_rpi{
 }stm_rpi;
 
 stm_rpi spi_data;
+uint32_t pack_sz;
 //stm_rpi spi_data = {.tof_sens[0] = 500, .tof_sens[1] = 600, .tof_sens[2] = 700, .tof_sens[3] = 800, .rtk_sens = 100};
 
 uint8_t pin_state = 0; //for testing only, delete after
@@ -79,6 +80,7 @@ __IO uint32_t uwDutyCyclePre1 = 0;
 __IO uint16_t uwDutyCyclePre2 = 0;
 __IO uint32_t uwDutyCycleCur1 = 0;
 __IO uint16_t uwDutyCycleCur2 = 0;
+
 
 /* USER CODE END PV */
 
@@ -149,7 +151,9 @@ int main(void)
   // RTK
   //sensorRTK = copy_struct(); // Tukaj se nahajajo vsi podatki
   HAL_UART_Receive_DMA(&huart2, &spi_data.gnss_sensor.rx_byte, 1);
-  HAL_Delay(2000);
+
+  HAL_Delay(5000);
+
   /* TerraBeeOne */
   sens[0].i2cHandle = &hi2c1;
   sens[0].Address = 0x40 << 1;  // default 0x30 << 1;
@@ -166,6 +170,7 @@ int main(void)
 	  Error_Handler();
   }
 
+  pack_sz = sizeof(spi_data);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -174,10 +179,10 @@ int main(void)
   {
 	 TrOne_ReadDist(&sens[0]);
 	 spi_data.tof_sens[0] = sens[0].distance;
-	 spi_data.gnss_sensor.vel.Velocity = sqrt (spi_data.gnss_sensor.vel.N*spi_data.gnss_sensor.vel.N +
-			 spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E);
+	 spi_data.gnss_sensor.vel.velocity = sqrt (spi_data.gnss_sensor.vel.N*spi_data.gnss_sensor.vel.N + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E);
 
-	 HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&spi_data, sizeof(spi_data));
+
+	 HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&spi_data, pack_sz);
 
 	 HAL_GPIO_WritePin (RPI_INT_GPIO_Port, RPI_INT_Pin, 1);
 	 HAL_Delay(50);

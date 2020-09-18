@@ -12,7 +12,7 @@ int rxindex = 0;
 uint8_t *rxBufferGNSSp;  // DODANO
 tGNSSrx GNSSrx;
 
-
+int teest;
 
 void ubx_handleGNSS(CGNSS* handle){
 	uint8_t msgbuf[MAX_GNSS];
@@ -107,9 +107,10 @@ uint8_t parseUBX(CGNSS* handle, uint8_t *buf, int cnt)
 		if(buf[1]==UBX_MON_MSGPP && cnt>=120){
 			handle->msgs = bytesToShort(&(buf[46]));
 		}
-	}else if(buf[0]==UBX_RXM){
+	}
+	else if(buf[0]==UBX_RXM){
 		if(buf[1]==UBX_RXM_RTCM && cnt>=8){
-			handle->rtcmStat = buf[2] >> 1;
+			handle->rtcmStat = buf[2] >> 2;
 		}
 	}
 
