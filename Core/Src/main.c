@@ -25,6 +25,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "math.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -148,11 +149,11 @@ int main(void)
   // RTK
   //sensorRTK = copy_struct(); // Tukaj se nahajajo vsi podatki
   HAL_UART_Receive_DMA(&huart2, &spi_data.gnss_sensor.rx_byte, 1);
-
+  HAL_Delay(2000);
   /* TerraBeeOne */
-  //sens[0].i2cHandle = &hi2c1;
-  //sens[0].Address = 0x40 << 1;  // default 0x30 << 1;
-  //res = TrOne_WhoAmI(&sens[0]);
+  sens[0].i2cHandle = &hi2c1;
+  sens[0].Address = 0x40 << 1;  // default 0x30 << 1;
+  res = TrOne_WhoAmI(&sens[0]);
 
   // Capture PWM Duty Cycle
   if(HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1) != HAL_OK)
@@ -171,12 +172,15 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 //TrOne_ReadDist(&sens[0]);
+	 TrOne_ReadDist(&sens[0]);
+	 spi_data.tof_sens[0] = sens[0].distance;
+	 spi_data.gnss_sensor.vel.Velocity = sqrt (spi_data.gnss_sensor.vel.N*spi_data.gnss_sensor.vel.N +
+			 spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E);
 
 	 HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&spi_data, sizeof(spi_data));
+
 	 HAL_GPIO_WritePin (RPI_INT_GPIO_Port, RPI_INT_Pin, 1);
 	 HAL_Delay(50);
-
 	 HAL_GPIO_WritePin (RPI_INT_GPIO_Port, RPI_INT_Pin, 0);
 	 HAL_Delay(50);
 
