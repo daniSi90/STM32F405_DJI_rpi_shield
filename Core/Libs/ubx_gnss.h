@@ -56,11 +56,13 @@
  enum{
 	// UBX CLASS ID
 	UBX_NAV     	    = 0x01,   //Navigation Results Messages
+	UBX_RXM     	 	= 0x02,   //Monitoring Messages
 	UBX_MON     	 	= 0x0A,   //Monitoring Messages
 	// UBX MESSAGE ID
 	UBX_NAV_PVT         = 0x07,   //NAV-PVT: Navigation Position Velocity Time Solution
 	UBX_NAV_RELPOSNED   = 0x3C,   //NAV-RELPOSNED: Relative Positioning Information in NED frame
-	UBX_MON_MSGPP       = 0x06   //MON-MSGPP: Message Parse and Process Status
+	UBX_MON_MSGPP       = 0x06,   //MON-MSGPP: Message Parse and Process Status
+	UBX_RXM_RTCM		= 0x32
  };
 
 // Fix Types
@@ -72,6 +74,13 @@ typedef enum {
 	RTK_GNSS	= 0x04U,
 	RTK_TIM		= 0x05U
 }GNSS_FixTypeDef;
+
+// Fix Types
+typedef enum {
+	RTCM_DNK  = 0x00U, // Do Not Know
+	RTCM_NU	  = 0x01U, // Not Used
+	RTCM_SUC  = 0x02U  // RTCM message used successfully by the receiver
+}GNSS_RTCMTypeDef;
 
  typedef struct
  {
@@ -98,6 +107,7 @@ typedef enum {
 	Pos pos;
 	Vel vel;
 	PosRel relPos;
+	GNSS_RTCMTypeDef rtcmStat;
 	GNSS_FixTypeDef fixType;
 	float hAcc;
 	float vAcc;

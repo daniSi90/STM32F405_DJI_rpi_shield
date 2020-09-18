@@ -95,7 +95,7 @@ uint8_t parseUBX(CGNSS* handle, uint8_t *buf, int cnt)
 		  handle->vel.E = bytesToLong(&(buf[56]));
 		  handle->vel.D = bytesToLong(&(buf[60]));
 		}
-		else if(buf[1]==UBX_NAV_RELPOSNED && cnt>=40)
+		else if(buf[1]==UBX_NAV_RELPOSNED && cnt>=64) // 64
 		{
 			handle->relPos.N = bytesToLong(&(buf[12]))+0.01f*(float)buf[24];
 			handle->relPos.E = bytesToLong(&(buf[16]))+0.01f*(float)buf[25];
@@ -107,7 +107,12 @@ uint8_t parseUBX(CGNSS* handle, uint8_t *buf, int cnt)
 		if(buf[1]==UBX_MON_MSGPP && cnt>=120){
 			handle->msgs = bytesToShort(&(buf[46]));
 		}
+	}else if(buf[0]==UBX_RXM){
+		if(buf[1]==UBX_RXM_RTCM && cnt>=8){
+			handle->rtcmStat = buf[2] >> 1;
+		}
 	}
+
 	return ok;
 }
 
