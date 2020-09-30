@@ -25,7 +25,6 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "math.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -86,7 +85,6 @@ __IO uint16_t uwDutyCycleCur2 = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -123,22 +121,18 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  HAL_Delay(5000);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_SPI3_Init();
   MX_I2C1_Init();
   MX_SPI2_Init();
   MX_SPI1_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-
-  /* Initialize interrupts */
-  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
   /* ODKOMENTIRAJ
@@ -162,12 +156,12 @@ int main(void)
   // Capture PWM Duty Cycle
   if(HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1) != HAL_OK)
   {
-	  Error_Handler();
+	  //Error_Handler();
   }
 
   if(HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_4) != HAL_OK)
   {
-	  Error_Handler();
+	  //Error_Handler();
   }
 
   pack_sz = sizeof(spi_data);
@@ -182,14 +176,16 @@ int main(void)
 	 spi_data.gnss_sensor.vel.velocity = sqrt (spi_data.gnss_sensor.vel.N*spi_data.gnss_sensor.vel.N + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E);
 
 
+	 //spi_data.gnss_sensor.vel.velocity = sqrt (spi_data.gnss_sensor.vel.N*spi_data.gnss_sensor.vel.N + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E + spi_data.gnss_sensor.vel.E*spi_data.gnss_sensor.vel.E);
+
 	 HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&spi_data, pack_sz);
 
-	 HAL_GPIO_WritePin (RPI_INT_GPIO_Port, RPI_INT_Pin, 1);
+	 HAL_GPIO_WritePin(RPI_INT_GPIO_Port, RPI_INT_Pin, 1);
 	 HAL_Delay(50);
-	 HAL_GPIO_WritePin (RPI_INT_GPIO_Port, RPI_INT_Pin, 0);
+	 HAL_GPIO_WritePin(RPI_INT_GPIO_Port, RPI_INT_Pin, 0);
 	 HAL_Delay(50);
 
-	 pin_state = HAL_GPIO_ReadPin (RPI_INT_GPIO_Port, RPI_INT_Pin);
+	 //pin_state = HAL_GPIO_ReadPin (RPI_INT_GPIO_Port, RPI_INT_Pin);
 
 	 spi_data.bno_sens += 3;
 	 if (spi_data.bno_sens > 50) {spi_data.bno_sens = -50;}
@@ -242,17 +238,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief NVIC Configuration.
-  * @retval None
-  */
-static void MX_NVIC_Init(void)
-{
-  /* EXTI15_10_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
 /* USER CODE BEGIN 4 */
@@ -311,7 +296,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-
+  NVIC_SystemReset();
   /* USER CODE END Error_Handler_Debug */
 }
 
